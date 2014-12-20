@@ -15,9 +15,9 @@ TARGET_DUDE=m32
 FCPU=8000000UL
 INCLUDES_DIR=../avr_libs/
 LIBS=
-#LIBS+=mklib_1wire
-#LIBS+=mklib_ds18b20
-#LIBS+=mklib_usart
+LIBS+=mklib_1wire/
+LIBS+=mklib_ds18b20
+LIBS+=mklib_usart
 
 #----------------------------------------------------------------------------------------
 #Programmer settings
@@ -37,10 +37,12 @@ DFLAGS=-DF_CPU=$(FCPU)
 INCLUDES=-I$(INCLUDES_DIR)
 
 #FIXME:
-#INCLUDES+=-I../avr_libs/mklib_usart
-#INCLUDES+=-I../avr_libs/mklib_ds18b20
-#INCLUDES+=-I../avr_libs/mklib_1wire
+INCLUDES+=-I../avr_libs/mklib_usart
+INCLUDES+=-I../avr_libs/mklib_ds18b20
+INCLUDES+=-I../avr_libs/mklib_1wire
 
+LIBS_SOURCES:=$(addprefix $(INCLUDES_DIR), $(LIBS))
+LIBS_SOURCES2:=$(foreach SOURCE, $(LIBS_SOURCES),$(shell find "$(SOURCE)" -name '*.c'))
 
 
 CXX_PARAMS=-std=c99
@@ -51,9 +53,8 @@ CXX_PARAMS=-std=c99
 
 
 build:
-#	#FIXME:
-#	#LIBS_SOURCES:=$(addprefix $(INCLUDES_DIR), $(LIBS))
-#	#LIBS_SOURCES2:=$(foreach SOURCE, $(LIBS_SOURCES),$(shell find "$(SOURCE)" -name '*.c'))
+#FIXME:
+
 	@`mkdir -p bin`
 	@echo -e "\e[32mCompiling...\e[39m"
 	$(CXX) $(LIBS_SOURCES2) ./main.c -O2 -mmcu=$(TARGET_GCC) $(CXX_PARAMS) $(INCLUDES) $(DFLAGS) -o ./bin/$(OUTPUT).elf
