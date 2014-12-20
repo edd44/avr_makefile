@@ -57,21 +57,23 @@ build:
 	@`mkdir -p bin`
 	@echo -e "\e[32mCompiling...\e[39m"
 	$(CXX) $(LIBS_SOURCES2) ./main.c -O2 -mmcu=$(TARGET_GCC) $(CXX_PARAMS) $(INCLUDES) $(DFLAGS) -o ./bin/$(OUTPUT).elf
-	@echo -e "\t\e[32m done.\e[39m"
-	@echo -e "\n\e[32m Creating hex file...\e[39m"
+	@echo -e "\t\e[32mdone.\e[39m"
+	@echo -e "\n\e[32mCreating hex file...\e[39m"
 	avr-objcopy -j .text -j .data -O ihex ./bin/$(OUTPUT).elf ./bin/$(OUTPUT).hex
-	@echo -e "\t\e[32m done.\e[39m"
+	@echo -e "\t\e[32mdone.\e[39m"
 
 run: build
-	@echo -e "\n\e[0;32m Uploading hex file...\e[39m"
+	@echo -e "\n\e[32m Uploading hex file...\e[39m"
 	$(UPLOADER) -P $(PORT) -c $(PROGRAMMER) -p$(TARGET_DUDE) -U flash:w:./bin/$(OUTPUT).hex
 
 clean:
-	rm -rf *.o
-	rm -rf *.elf
-	rm -rf *.hex
-	rm -rf .\bin
-	@echo -e "\t\n \e[32m cleaned up.\e[39m"
+	@rm -rf *.o
+	@rm -rf *.elf
+	@rm -rf .*.elf
+	@rm -rf *.hex
+	@rm -rf .*.hex
+	@rm -rf ./bin
+	@echo -e "\t\n \e[32mCleaned up.\e[39m"
 
 test_connect:
 	@$(UPLOADER) -P $(PORT) -c $(PROGRAMMER) -p$(TARGET_DUDE)
@@ -83,3 +85,9 @@ print_mcu_names:
 	@echo -e "\n\e[32m Names for TARGET_DUDE\e[39m"
 	-$(UPLOADER) -P $(PORT) -c $(PROGRAMMER)
 	@echo -e "\n\e[32m Don't care about these 'error' above, it's a simple way to get target names listed.\e[39m"
+
+read_fusebits:
+	@echo "" > temp
+	@$(UPLOADER) -P $(PORT) -c $(PROGRAMMER) -p$(TARGET_DUDE) -U lock:r:-:h 1>>temp 2>>temp
+	@grep "(H:.*" temp -o
+	@rm temp
