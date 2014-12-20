@@ -9,14 +9,13 @@
 
 #----------------------------------------------------------------------------------------
 #Project specific settings
-
 TARGET_GCC=atmega32
 TARGET_DUDE=m32
 FCPU=8000000UL
 INCLUDES_DIR=../avr_libs/
 LIBS=
-LIBS+=mklib_1wire/
-LIBS+=mklib_ds18b20
+#LIBS+=mklib_1wire
+#LIBS+=mklib_ds18b20
 LIBS+=mklib_usart
 
 #----------------------------------------------------------------------------------------
@@ -27,25 +26,23 @@ PROGRAMMER=stk500v2
 
 #----------------------------------------------------------------------------------------
 #Universal settings
-
 CXX=avr-gcc
+CXX_PARAMS=-std=c99
 SHELL=bash
 OUTPUT=$(shell basename $(CURDIR))
-#define, macros
-DFLAGS=-DF_CPU=$(FCPU)
-#includes
-INCLUDES=-I$(INCLUDES_DIR)
 
+#includes
 #FIXME:
 INCLUDES+=-I../avr_libs/mklib_usart
-INCLUDES+=-I../avr_libs/mklib_ds18b20
-INCLUDES+=-I../avr_libs/mklib_1wire
+#INCLUDES+=-I../avr_libs/mklib_ds18b20
+#INCLUDES+=-I../avr_libs/mklib_1wire
 
+#----------------------------------------------------------------------------------------
+#Varibles eval
 LIBS_SOURCES:=$(addprefix $(INCLUDES_DIR), $(LIBS))
 LIBS_SOURCES2:=$(foreach SOURCE, $(LIBS_SOURCES),$(shell find "$(SOURCE)" -name '*.c'))
-
-
-CXX_PARAMS=-std=c99
+INCLUDES=-I$(INCLUDES_DIR)
+DFLAGS=-DF_CPU=$(FCPU)
 
 #----------------------------------------------------------------------------------------
 #Actual makefile
@@ -53,8 +50,6 @@ CXX_PARAMS=-std=c99
 
 
 build:
-#FIXME:
-
 	@`mkdir -p bin`
 	@echo -e "\e[32mCompiling...\e[39m"
 	$(CXX) $(LIBS_SOURCES2) ./main.c -O2 -mmcu=$(TARGET_GCC) $(CXX_PARAMS) $(INCLUDES) $(DFLAGS) -o ./bin/$(OUTPUT).elf
