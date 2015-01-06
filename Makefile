@@ -41,6 +41,7 @@ INCLUDES+=-I../avr_libs/mklib_usart
 #Varibles eval
 LIBS_SOURCES:=$(addprefix $(INCLUDES_DIR), $(LIBS))
 LIBS_SOURCES2:=$(foreach SOURCE, $(LIBS_SOURCES),$(shell find "$(SOURCE)" -name '*.c'))
+LOCAL_SOURCES:=$(shell find . -name "*.c")
 INCLUDES=-I$(INCLUDES_DIR)
 DFLAGS=-DF_CPU=$(FCPU)
 
@@ -52,7 +53,7 @@ DFLAGS=-DF_CPU=$(FCPU)
 build:
 	@`mkdir -p bin`
 	@echo -e "\e[32mCompiling...\e[39m"
-	$(CXX) $(LIBS_SOURCES2) ./main.c -O2 -mmcu=$(TARGET_GCC) $(CXX_PARAMS) $(INCLUDES) $(DFLAGS) -o ./bin/$(OUTPUT).elf
+	$(CXX) $(LIBS_SOURCES2) $(LOCAL_SOURCES) -O2 -mmcu=$(TARGET_GCC) $(CXX_PARAMS) $(INCLUDES) $(DFLAGS) -o ./bin/$(OUTPUT).elf
 	@echo -e "\t\e[32mdone.\e[39m"
 	@echo -e "\n\e[32mCreating hex file...\e[39m"
 	avr-objcopy -j .text -j .data -O ihex ./bin/$(OUTPUT).elf ./bin/$(OUTPUT).hex
