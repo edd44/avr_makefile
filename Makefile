@@ -41,7 +41,8 @@ INCLUDES+=-I../avr_libs/mklib_usart
 #Varibles eval
 LIBS_SOURCES:=$(addprefix $(INCLUDES_DIR), $(LIBS))
 LIBS_SOURCES2:=$(foreach SOURCE, $(LIBS_SOURCES),$(shell find "$(SOURCE)" -name '*.c'))
-LOCAL_SOURCES:=$(shell find . -name "*.c")
+LOCAL_SOURCES:=$(shell find . \( -name "*.c" -not -path "./tests*" \) )
+TEST_SOURCES:=$(shell find . \( -name "*.c" -not -name "main.c" \) )
 INCLUDES=-I$(INCLUDES_DIR)
 DFLAGS=-DF_CPU=$(FCPU)
 
@@ -62,6 +63,12 @@ build:
 run: build
 	@echo -e "\n\e[32m Uploading hex file...\e[39m"
 	$(UPLOADER) -P $(PORT) -c $(PROGRAMMER) -p$(TARGET_DUDE) -U flash:w:./bin/$(OUTPUT).hex
+
+test:
+	@`mkdir -p bin`
+	@echo -e "\e[32mCompiling test binary...\e[39m"
+	g++ -Istubs/ -I./ -Itests/ $(TEST_SOURCES) -O2  $(DFLAGS) -o ./bin/test.bin -lgtest -lgtest_main -lpthread
+	@./bin/test.bin
 
 clean:
 	@rm -rf *.o
