@@ -26,8 +26,8 @@ PROGRAMMER=stk500v2
 
 #----------------------------------------------------------------------------------------
 #Universal settings
-CXX=avr-gcc
-CXX_PARAMS=-std=c99
+CC=avr-gcc
+CC_PARAMS=-std=c99
 SHELL=bash
 OUTPUT=$(shell basename $(CURDIR))
 
@@ -54,7 +54,7 @@ DFLAGS=-DF_CPU=$(FCPU)
 build:
 	@`mkdir -p bin`
 	@echo -e "\e[32mCompiling...\e[39m"
-	$(CXX) $(LIBS_SOURCES2) $(LOCAL_SOURCES) -O2 -mmcu=$(TARGET_GCC) $(CXX_PARAMS) $(INCLUDES) $(DFLAGS) -o ./bin/$(OUTPUT).elf
+	$(CC) $(LIBS_SOURCES2) $(LOCAL_SOURCES) -O2 -mmcu=$(TARGET_GCC) $(CC_PARAMS) $(INCLUDES) $(DFLAGS) -o ./bin/$(OUTPUT).elf
 	@echo -e "\t\e[32mdone.\e[39m"
 	@echo -e "\n\e[32mCreating hex file...\e[39m"
 	avr-objcopy -j .text -j .data -O ihex ./bin/$(OUTPUT).elf ./bin/$(OUTPUT).hex
@@ -67,7 +67,7 @@ run: build
 test:
 	@`mkdir -p bin`
 	@echo -e "\e[32mCompiling test binary...\e[39m"
-	g++ -Istubs/ -I./ -Itests/ $(TEST_SOURCES) -O2  $(DFLAGS) -o ./bin/test.bin -lgtest -lgtest_main -lpthread
+	$(CXX) -Istubs/ -I./ -Itests/ $(TEST_SOURCES) -O2  $(DFLAGS) -o ./bin/test.bin -lgtest -lgtest_main -lpthread
 	@./bin/test.bin
 
 clean:
